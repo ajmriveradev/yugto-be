@@ -3,8 +3,51 @@ const db = require("../services/database");
 exports.getAllChildren = async (req, res) => {
   try {
     const result = await db.pool.query("SELECT * from children");
-    console.log("RESULT: ", result);
-    return res.status(200).json(result?.rows);
+
+    return res.status(200).json({
+      log_trace: "ctrlr/children/getAllChildren",
+      data: result?.rows
+    });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+exports.getChildById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const query = {
+      text: 'SELECT * from children where id=$1',
+      values: [id]
+    }
+
+    const result = await db.pool.query(query);
+
+    return res.status(200).json({
+      log_trace: "ctrlr/children/getChildById",
+      data: result?.rows[0]
+    });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+exports.getAllChildrenByParentId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const query = {
+      text: 'SELECT * from children where parent_id=$1',
+      values: [id]
+    }
+
+    const result = await db.pool.query(query);
+
+    return res.status(200).json({
+      log_trace: "ctrlr/children/getAllChildrenByParentId",
+      data: result?.rows
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -36,7 +79,10 @@ exports.createChild = async (req, res) => {
 
     const result = await db.pool.query(query);
 
-    return res.status(201).json(result.rows[0]);
+    return res.status(201).json({
+      log_trace: "ctrlr/children/createChild",
+      data: result?.rows[0]
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -69,7 +115,10 @@ exports.updateChild = async (req, res) => {
 
     const result = await db.pool.query(query);
 
-    return res.status(201).json(result.rows[0]);
+    return res.status(201).json({
+      log_trace: "ctrlr/children/updateChild",
+      data: result?.rows[0]
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -105,7 +154,10 @@ exports.deleteChild = async (req, res) => {
       return res.status(400).json({ message: "Child not found!" });
     }
 
-    return res.status(201).json(result.rows[0]);
+    return res.status(201).json({
+      log_trace: "ctrlr/children/deleteChild",
+      data: "Child successfully deleted!"
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

@@ -4,7 +4,36 @@ exports.getAllUsers = async (req, res) => {
   try {
     const result = await db.pool.query("SELECT * from users");
 
-    return res.status(200).json(result.rows);
+    return res.status(200).json({
+      log_trace: "ctrlr/users/getAllUsers",
+      data: result?.rows
+    });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+exports.getUserByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    
+    if (!email) {
+      return res.status(422).json({ error: "Email is required!" });
+    }
+
+    const result = await db.pool.query({
+      text: 'SELECT * from users where email=$1',
+      values: [email]
+    });
+
+    if (result?.rowCount === 0) {
+      return res.status(400).json({ message: "Email does not exist!" });
+    }
+
+    return res.status(200).json({
+      log_trace: "ctrlr/users/getUserByEmail",
+      data: result?.rows[0]
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -36,7 +65,10 @@ exports.createUser = async (req, res) => {
 
     const result = await db.pool.query(query);
 
-    return res.status(201).json(result.rows[0]);
+    return res.status(201).json({
+      log_trace: "ctrlr/users/createUser",
+      data: result?.rows[0]
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
@@ -69,7 +101,10 @@ exports.updateUser = async (req, res) => {
 
     const result = await db.pool.query(query);
 
-    return res.status(201).json(result.rows[0]);
+    return res.status(201).json({
+      log_trace: "ctrlr/users/updateUser",
+      data: result?.rows[0]
+    });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
