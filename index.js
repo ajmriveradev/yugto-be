@@ -3,7 +3,9 @@ const db = require("./services/database");
 
 const app = express();
 
+app.use(express.json());
 app.use(require('./routes/users'));
+app.use(require('./routes/children'));
 
 app.get("/", (req, res) => {
   res.send("Welcome to Yugto!");
