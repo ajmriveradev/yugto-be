@@ -1,12 +1,11 @@
 const db = require("../services/database");
-const { encryptPassword, comparePassword } = require("../services/passwords");
 
-exports.getAllUsers = async (req, res) => {
+exports.getAllVaccinationDates = async (req, res) => {
   try {
-    const result = await db.pool.query("SELECT * from users");
+    const result = await db.pool.query("SELECT * from vaccination_dates");
 
     return res.status(200).json({
-      log_trace: "ctrlr/users/getAllUsers",
+      log_trace: "ctrlr/users/getAllVaccinationDates",
       data: result?.rows
     });
   } catch (error) {
@@ -14,7 +13,7 @@ exports.getAllUsers = async (req, res) => {
   }
 }
 
-exports.getUserByEmail = async (req, res) => {
+exports.getVaccinationDateById = async (req, res) => {
   try {
     const { email } = req.params;
     
@@ -32,7 +31,7 @@ exports.getUserByEmail = async (req, res) => {
     }
 
     return res.status(200).json({
-      log_trace: "ctrlr/users/getUserByEmail",
+      log_trace: "ctrlr/users/getVaccinationDateById",
       data: result?.rows[0]
     });
   } catch (error) {
@@ -40,9 +39,9 @@ exports.getUserByEmail = async (req, res) => {
   }
 }
 
-exports.createUser = async (req, res) => {
+exports.createVaccinationDate = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, birthDate, password, isParent, isMedicalProfessional } = req.body;
+    const { firstName, lastName, email, phone, birthDate, isParent, isMedicalProfessional } = req.body;
 
     if (!email) {
       return res.status(422).json({ error: "Email is required!" });
@@ -59,17 +58,15 @@ exports.createUser = async (req, res) => {
       return res.status(200).json({ message: "Email already exists!" });
     }
 
-    const encryptedPassword = await encryptPassword(password);
-
     const query = {
-      text: 'INSERT INTO users(first_name, last_name, email, phone, birth_date, password, is_parent, is_medical_professional) VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      values: [firstName, lastName, email, phone, birthDate, encryptedPassword, isParent, isMedicalProfessional]
+      text: 'INSERT INTO users(first_name, last_name, email, phone, birth_date, is_parent, is_medical_professional) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      values: [firstName, lastName, email, phone, birthDate, isParent, isMedicalProfessional]
     }
 
     const result = await db.pool.query(query);
 
     return res.status(201).json({
-      log_trace: "ctrlr/users/createUser",
+      log_trace: "ctrlr/users/createVaccinationDate",
       data: result?.rows[0]
     });
   } catch (error) {
@@ -77,49 +74,7 @@ exports.createUser = async (req, res) => {
   }
 }
 
-exports.signInUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email) {
-      return res.status(422).json({ error: "Email is required!" });
-    }
-
-    const passwordQuery = {
-      text: 'SELECT password from users where email=$1',
-      values: [email]
-    }
-
-    const passwordCheck = await db.pool.query(passwordQuery);
-    const dbPassword = passwordCheck.rows[0].password;
-
-    const isMatch = await comparePassword(dbPassword, password);
-
-    if (isMatch) {
-      const query = {
-        text: 'SELECT * from users where email=$1',
-        values: [email]
-      }
-  
-      const result = await db.pool.query(query);
-
-      return res.status(201).json({
-        log_trace: "ctrlr/users/signInUser",
-        data: result?.rows[0]
-      });
-    } else {
-      return res.status(400).json({
-        log_trace: "ctrlr/users/signInUser",
-        data: null,
-        message: "False Match"
-      });
-    }
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
-  }
-}
-
-exports.updateUser = async (req, res) => {
+exports.updateVaccinationDate = async (req, res) => {
   try {
     const { firstName, lastName, phone, birthDate } = req.body;
     const { id } = req.params;
@@ -147,7 +102,7 @@ exports.updateUser = async (req, res) => {
     const result = await db.pool.query(query);
 
     return res.status(201).json({
-      log_trace: "ctrlr/users/updateUser",
+      log_trace: "ctrlr/users/updateVaccinationDate",
       data: result?.rows[0]
     });
   } catch (error) {
