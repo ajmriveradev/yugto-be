@@ -1,10 +1,10 @@
 const router = require('express').Router();
 
-const vaccinationsCtrlr = require('../controllers/users');
+const vaccinationsCtrlr = require('../controllers/vaccinations');
 
-router.get("/users", vaccinationsCtrlr.getAllUsers);
-router.get("/users/:email", vaccinationsCtrlr.getUserByEmail);
-router.post("/users", vaccinationsCtrlr.createUser);
-router.put("/users/:id", vaccinationsCtrlr.updateUser);
+router.get("/vaccinations", vaccinationsCtrlr.getAllVaccinationDates);
+router.get("/vaccinations/:id", vaccinationsCtrlr.getVaccinationDateById);
+router.post("/vaccinations", vaccinationsCtrlr.createVaccinationDate);
+router.put("/vaccinations/:id", vaccinationsCtrlr.updateVaccinationDate);
 
 module.exports = router;

@@ -56,7 +56,10 @@ exports.createUser = async (req, res) => {
     const emailAlreadyExists = checkIfExists?.rows[0].exists;
 
     if (emailAlreadyExists) {
-      return res.status(200).json({ message: "Email already exists!" });
+      return res.status(200).json({ 
+        data: null,
+        message: "Email already exists!" 
+      });
     }
 
     const encryptedPassword = await encryptPassword(password);
@@ -108,10 +111,10 @@ exports.signInUser = async (req, res) => {
         data: result?.rows[0]
       });
     } else {
-      return res.status(400).json({
+      return res.status(200).json({
         log_trace: "ctrlr/users/signInUser",
         data: null,
-        message: "False Match"
+        message: "Email or password has no matches!"
       });
     }
   } catch (error) {

@@ -13,7 +13,7 @@ exports.getAllKnownConditions = async (req, res) => {
   }
 }
 
-exports.getKnownConditionByChildrenId = async (req, res) => {
+exports.getKnownConditionsByChildrenId = async (req, res) => {
   try {
     const { id } = req.params;
     

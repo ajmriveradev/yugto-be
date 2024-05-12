@@ -41,26 +41,26 @@ exports.getVaccinationDateById = async (req, res) => {
 
 exports.createVaccinationDate = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, birthDate, isParent, isMedicalProfessional } = req.body;
+    const { childrenId, vaccineName, vaccinationDate } = req.body;
 
-    if (!email) {
-      return res.status(422).json({ error: "Email is required!" });
+    if (!childrenId) {
+      return res.status(422).json({ error: "ID is required!" });
     }
 
     const checkIfExists = await db.pool.query({
-      text: 'SELECT EXISTS (SELECT * from users where email=$1)',
-      values: [email]
+      text: 'SELECT EXISTS (SELECT * from children where id=$1)',
+      values: [childrenId]
     });
 
-    const emailAlreadyExists = checkIfExists?.rows[0].exists;
+    const childExists = checkIfExists?.rows[0].exists;
 
-    if (emailAlreadyExists) {
-      return res.status(200).json({ message: "Email already exists!" });
+    if (!childExists) {
+      return res.status(200).json({ message: "Child does not exist!" });
     }
 
     const query = {
-      text: 'INSERT INTO users(first_name, last_name, email, phone, birth_date, is_parent, is_medical_professional) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      values: [firstName, lastName, email, phone, birthDate, isParent, isMedicalProfessional]
+      text: 'INSERT INTO users(children_id, vaccine_name, vaccination_date) VALUES($1, $2, $3) RETURNING *',
+      values: [childrenId, vaccineName, vaccinationDate]
     }
 
     const result = await db.pool.query(query);
@@ -76,7 +76,7 @@ exports.createVaccinationDate = async (req, res) => {
 
 exports.updateVaccinationDate = async (req, res) => {
   try {
-    const { firstName, lastName, phone, birthDate } = req.body;
+    const { vaccineName, vaccinationDate } = req.body;
     const { id } = req.params;
 
     if (!id) {

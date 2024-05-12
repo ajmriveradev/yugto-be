@@ -3,7 +3,7 @@ const router = require('express').Router();
 const knownConditionsCtrlr = require('../controllers/knownConditions');
 
 router.get("/known-conditions", knownConditionsCtrlr.getAllKnownConditions);
-router.get("/known-conditions/:childrenId", knownConditionsCtrlr.getKnownConditionByChildrenId);
+router.get("/known-conditions/:childrenId", knownConditionsCtrlr.getKnownConditionsByChildrenId);
 router.post("/known-conditions", knownConditionsCtrlr.createKnownCondition);
 router.put("/known-conditions/:id", knownConditionsCtrlr.updateKnownCondition);
 

@@ -1,4 +1,7 @@
+const { getConsultationsByChildrenId } = require("../services/consultations");
 const db = require("../services/database");
+const { getKnownConditionsByChildrenId } = require("../services/knownConditions");
+const { getVaccinationDatesByChildrenId } = require("../services/vaccinations");
 
 exports.getAllChildren = async (req, res) => {
   try {
@@ -24,9 +27,20 @@ exports.getChildById = async (req, res) => {
 
     const result = await db.pool.query(query);
 
+    const knownConditions = await getKnownConditionsByChildrenId(id);
+    const consultations = await getConsultationsByChildrenId(id);
+    const vaccinationDates = await getVaccinationDatesByChildrenId(id);
+
+    const data = {
+      child: result?.rows[0],
+      knownConditions,
+      consultations,
+      vaccinationDates
+    };
+
     return res.status(200).json({
       log_trace: "ctrlr/children/getChildById",
-      data: result?.rows[0]
+      data
     });
   } catch (error) {
     return res.status(400).json({ error: error.message });
